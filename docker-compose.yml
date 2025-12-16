@@ -1,0 +1,15 @@
+services:
+  video-admin:
+    image: ${IMAGE}
+    container_name: ${APP_NAME}
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    ports:
+      - 82:80
+    networks:
+      - video
+
+networks:
+  video:
+    external: true

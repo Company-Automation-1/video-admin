@@ -5,6 +5,7 @@
   "description": "An out-of-box UI solution for enterprise applications",
   "repository": "git@github.com:ant-design/ant-design-pro.git",
   "scripts": {
+    "build": "max build",
     "analyze": "cross-env ANALYZE=1 max build",
     "biome:lint": "biome lint",
     "format": "biome check --write",

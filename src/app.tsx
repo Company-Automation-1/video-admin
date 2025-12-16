@@ -11,7 +11,8 @@ import {
   Question,
   SelectLang,
 } from '@/components';
-import { currentUser as queryCurrentUser } from '@/services/ant-design-pro/api';
+import { profile } from '@/services/ant-design-pro/api';
+import { type TokenManager, tokenManager } from '@/utils/token';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import '@ant-design/v5-patch-for-react-19';
@@ -21,19 +22,35 @@ const loginPath = '/user/login';
 
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
+ * getInitialState() 的返回值将成为全局初始状态
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
+  currentUser?: API.Profile;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  token?: TokenManager;
+  fetchUserInfo?: () => Promise<API.Profile | undefined>;
 }> {
+  // Token 管理对象（使用统一的工具函数）
+  const token = tokenManager;
+
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser({
+      const msg = await profile({
         skipErrorHandler: true,
       });
-      return msg.data;
+      if (!msg.success || !msg.data) {
+        history.push(loginPath);
+        return undefined;
+      }
+
+      const userInfo = {
+        ...msg.data,
+        avatar:
+          'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+      };
+
+      return userInfo;
     } catch (_error) {
       history.push(loginPath);
     }
@@ -50,11 +67,13 @@ export async function getInitialState(): Promise<{
     return {
       fetchUserInfo,
       currentUser,
+      token,
       settings: defaultSettings as Partial<LayoutSettings>,
     };
   }
   return {
     fetchUserInfo,
+    token,
     settings: defaultSettings as Partial<LayoutSettings>,
   };
 }
@@ -77,7 +96,7 @@ export const layout: RunTimeLayoutConfig = ({
       },
     },
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.username,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
@@ -150,6 +169,6 @@ export const layout: RunTimeLayoutConfig = ({
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request: RequestConfig = {
-  baseURL: 'https://proapi.azurewebsites.net',
+  baseURL: '',
   ...errorConfig,
 };

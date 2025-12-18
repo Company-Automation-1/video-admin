@@ -6,7 +6,7 @@ services:
       - TZ=Asia/Shanghai
     restart: unless-stopped
     ports:
-      - 82:80
+      - 82:82
     networks:
       - video
 

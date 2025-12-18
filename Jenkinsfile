@@ -63,7 +63,7 @@ pipeline {
             steps {
                 sh """
                     sleep 5
-                    docker exec ${APP_NAME} curl -sf http://localhost/health | grep -q ok || exit 1
+                    docker exec ${APP_NAME} curl -sf http://localhost:82/health | grep -q ok || exit 1
                 """
             }
         }

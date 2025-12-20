@@ -12,7 +12,7 @@ declare namespace API {
   };
 
   /** 后端分页数据格式 */
-  type Pagination<T> = {
+  type Pagination<T> = Response<{
     list: T[];
     pagination: {
       page: number;
@@ -20,5 +20,5 @@ declare namespace API {
       total: number;
       pages: number;
     };
-  };
+  }>;
 }

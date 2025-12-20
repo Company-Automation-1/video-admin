@@ -7,7 +7,6 @@ declare namespace API {
     username: string;
     email: string;
     avatar: string;
-    points: number;
     created_at: number;
     updated_at: number;
   };

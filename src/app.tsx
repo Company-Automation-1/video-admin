@@ -10,13 +10,13 @@ import {
   SelectLang,
 } from '@/components';
 import { profile } from '@/services/ant-design-pro/api';
+import { loginFunc } from '@/utils/login';
 import { type TokenManager, tokenManager } from '@/utils/token';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import '@ant-design/v5-patch-for-react-19';
 
 const isDev = process.env.NODE_ENV === 'development';
-const loginPath = '/user/login';
 
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -38,7 +38,7 @@ export async function getInitialState(): Promise<{
         skipErrorHandler: true,
       });
       if (!msg.success || !msg.data) {
-        history.push(loginPath);
+        loginFunc.gotoLogin();
         return undefined;
       }
 
@@ -50,17 +50,13 @@ export async function getInitialState(): Promise<{
 
       return userInfo;
     } catch (_error) {
-      history.push(loginPath);
+      loginFunc.gotoLogin();
     }
     return undefined;
   };
   // 如果不是登录页面，执行
   const { location } = history;
-  if (
-    ![loginPath, '/user/register', '/user/register-result'].includes(
-      location.pathname,
-    )
-  ) {
+  if (!Object.values(loginFunc.loginPath).includes(location.pathname)) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -100,8 +96,11 @@ export const layout: RunTimeLayoutConfig = ({
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
+      if (
+        !initialState?.currentUser &&
+        location.pathname !== loginFunc.loginPath.login
+      ) {
+        loginFunc.gotoLogin();
       }
     },
     bgLayoutImgList: [

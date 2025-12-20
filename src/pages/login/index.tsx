@@ -17,7 +17,7 @@ import React from 'react';
 import { flushSync } from 'react-dom';
 import { Footer } from '@/components';
 import { login } from '@/services/ant-design-pro/api';
-import Settings from '../../../../config/defaultSettings';
+import Settings from '../../../config/defaultSettings';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -81,7 +81,9 @@ const Login: React.FC = () => {
         password: values.password,
       };
 
-      const msg = await login(loginData, { skipErrorHandler: true });
+      const msg = await login(loginData, {
+        skipErrorHandler: true, // 跳过错误处理
+      });
 
       if (msg.success && msg.data) {
         // 使用 token 管理对象保存 token

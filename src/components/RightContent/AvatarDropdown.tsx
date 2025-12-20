@@ -10,6 +10,7 @@ import { createStyles } from 'antd-style';
 import React from 'react';
 import { flushSync } from 'react-dom';
 import { outLogin } from '@/services/ant-design-pro/api';
+import { loginFunc } from '@/utils/login';
 import HeaderDropdown from '../HeaderDropdown';
 
 export type GlobalHeaderRightProps = {
@@ -60,9 +61,9 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
     /** 此方法会跳转到 redirect 参数所在的位置 */
     const redirect = urlParams.get('redirect');
     // Note: There may be security issues, please note
-    if (window.location.pathname !== '/user/login' && !redirect) {
+    if (window.location.pathname !== loginFunc.loginPath.login && !redirect) {
       history.replace({
-        pathname: '/user/login',
+        pathname: loginFunc.loginPath.login,
         search: searchParams.toString(),
       });
     }

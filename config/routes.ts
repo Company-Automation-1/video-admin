@@ -12,13 +12,13 @@
  */
 export default [
   {
-    path: '/user',
+    path: '/login',
     layout: false,
     routes: [
       {
         name: 'login',
-        path: '/user/login',
-        component: './user/login',
+        path: '/login',
+        component: './login',
       },
     ],
   },
@@ -44,6 +44,24 @@ export default [
         component: './Admin',
       },
     ],
+  },
+  {
+    path: '/users',
+    name: 'users',
+    icon: 'user',
+    component: './users',
+  },
+  {
+    path: '/admins',
+    name: 'admins',
+    icon: 'crown',
+    component: './admins',
+  },
+  {
+    path: '/account',
+    name: 'account',
+    icon: 'user',
+    component: './account/index',
   },
   {
     path: '/',

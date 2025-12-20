@@ -1,80 +1,92 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { useRef } from 'react';
+import { getIntl, useIntl } from '@umijs/max';
+import { useMemo, useRef } from 'react';
 import { getUsers } from '@/services/users/api';
 
-const columns: ProColumns<API.User>[] = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-    hideInSearch: true,
-    editable: false,
-  },
-  {
-    title: '用户名',
-    dataIndex: 'username',
-    copyable: true,
-    ellipsis: true,
-    editable: false,
-  },
-  {
-    title: '邮箱',
-    dataIndex: 'email',
-    copyable: true,
-    ellipsis: true,
-    editable: false,
-  },
-  {
-    title: '积分',
-    dataIndex: 'points',
-    sorter: true,
-    valueType: 'digit',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'created_at',
-    valueType: 'dateTime',
-    sorter: true,
-    hideInSearch: true,
-    render: (_, record) => {
-      return record.created_at
-        ? new Date(record.created_at * 1000).toLocaleString()
-        : '-';
+const getColumns = (): ProColumns<API.User>[] => {
+  const intl = getIntl();
+  return [
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.id' }),
+      dataIndex: 'id',
+      hideInSearch: true,
+      editable: false,
     },
-    editable: false,
-  },
-  {
-    title: '更新时间',
-    dataIndex: 'updated_at',
-    valueType: 'dateTime',
-    sorter: true,
-    hideInSearch: true,
-    render: (_, record) => {
-      return record.updated_at
-        ? new Date(record.updated_at * 1000).toLocaleString()
-        : '-';
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.username' }),
+      dataIndex: 'username',
+      copyable: true,
+      ellipsis: true,
+      editable: false,
     },
-    editable: false,
-  },
-  {
-    title: '操作',
-    valueType: 'option',
-    key: 'option',
-    render: (_text, record, _index, action) => [
-      <a
-        key="editable"
-        onClick={() => {
-          action?.startEditable?.(record.id);
-        }}
-      >
-        编辑
-      </a>,
-    ],
-  },
-];
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.email' }),
+      dataIndex: 'email',
+      copyable: true,
+      ellipsis: true,
+      editable: false,
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.points' }),
+      dataIndex: 'points',
+      sorter: true,
+      valueType: 'digit',
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.createdAt' }),
+      dataIndex: 'created_at',
+      valueType: 'dateTime',
+      sorter: true,
+      hideInSearch: true,
+      render: (_, record) => {
+        return record.created_at
+          ? new Date(record.created_at * 1000).toLocaleString()
+          : '-';
+      },
+      editable: false,
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.updatedAt' }),
+      dataIndex: 'updated_at',
+      valueType: 'dateTime',
+      sorter: true,
+      hideInSearch: true,
+      render: (_, record) => {
+        return record.updated_at
+          ? new Date(record.updated_at * 1000).toLocaleString()
+          : '-';
+      },
+      editable: false,
+    },
+    {
+      title: intl.formatMessage({ id: 'pages.users.columns.option' }),
+      valueType: 'option',
+      key: 'option',
+      render: (_text, record, _index, action) => {
+        const intl = getIntl();
+        return [
+          <a
+            key="editable"
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            {intl.formatMessage({ id: 'pages.users.columns.edit' })}
+          </a>,
+        ];
+      },
+    },
+  ];
+};
 
 const Users = () => {
   const actionRef = useRef<ActionType>(null);
+  const intl = useIntl();
+
+  // 使用 useMemo 缓存 columns，依赖语言代码而不是整个 intl 对象
+  console.log('intl.locale: ', intl.locale);
+  const columns = useMemo(() => getColumns(), [intl.locale]);
 
   return (
     <ProTable<API.User>
@@ -146,7 +158,7 @@ const Users = () => {
         showQuickJumper: true,
       }}
       dateFormatter="string"
-      headerTitle="用户列表"
+      headerTitle={intl.formatMessage({ id: 'pages.users.title' })}
     />
   );
 };

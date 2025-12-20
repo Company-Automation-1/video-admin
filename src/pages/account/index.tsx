@@ -1,4 +1,5 @@
 import { GridContent } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import { Menu } from 'antd';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import BaseView from './components/base';
@@ -11,8 +12,9 @@ type SettingsState = {
 };
 const Settings: React.FC = () => {
   const { styles } = useStyles();
+  const intl = useIntl();
   const menuMap: Record<string, React.ReactNode> = {
-    base: '基本设置',
+    base: intl.formatMessage({ id: 'pages.account.settings.base' }),
   };
   const [initConfig, setInitConfig] = useState<SettingsState>({
     mode: 'inline',

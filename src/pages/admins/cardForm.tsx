@@ -1,5 +1,6 @@
 import type { ActionType } from '@ant-design/pro-components';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import { Modal, message } from 'antd';
 import { createAdmin } from '@/services/admins/api';
 
@@ -14,25 +15,34 @@ const CardForm: React.FC<CardFormProps> = ({
   onCancel,
   actionRef,
 }) => {
+  const intl = useIntl();
+
   const handleFinish = async (values: API.CreateAdminParams) => {
     try {
       const res = await createAdmin(values, { skipErrorHandler: true });
       if (res.success) {
-        message.success('创建管理员成功');
+        message.success(
+          intl.formatMessage({ id: 'pages.admins.create.success' }),
+        );
         onCancel();
         actionRef?.current?.reload();
       } else {
-        message.error(res.message || '创建管理员失败，请重试');
+        message.error(
+          res.message ||
+            intl.formatMessage({ id: 'pages.admins.create.failure' }),
+        );
       }
     } catch (e: any) {
-      const msg = e.response.data.message || '创建管理员失败，请重试';
+      const msg =
+        e.response?.data?.message ||
+        intl.formatMessage({ id: 'pages.admins.create.failure' });
       message.error(msg);
     }
   };
 
   return (
     <Modal
-      title="新建管理员"
+      title={intl.formatMessage({ id: 'pages.admins.createForm.title' })}
       open={visible}
       onCancel={onCancel}
       footer={null}
@@ -43,8 +53,12 @@ const CardForm: React.FC<CardFormProps> = ({
         onFinish={handleFinish}
         submitter={{
           searchConfig: {
-            submitText: '创建',
-            resetText: '取消',
+            submitText: intl.formatMessage({
+              id: 'pages.admins.createForm.submit',
+            }),
+            resetText: intl.formatMessage({
+              id: 'pages.admins.createForm.cancel',
+            }),
           },
           resetButtonProps: {
             onClick: onCancel,
@@ -53,12 +67,18 @@ const CardForm: React.FC<CardFormProps> = ({
       >
         <ProFormText
           name="username"
-          label="管理员名"
-          placeholder="请输入管理员名"
+          label={intl.formatMessage({
+            id: 'pages.admins.createForm.username.label',
+          })}
+          placeholder={intl.formatMessage({
+            id: 'pages.admins.createForm.username.placeholder',
+          })}
           rules={[
             {
               required: true,
-              message: '请输入管理员名',
+              message: intl.formatMessage({
+                id: 'pages.admins.createForm.username.required',
+              }),
             },
           ]}
           fieldProps={{
@@ -68,12 +88,18 @@ const CardForm: React.FC<CardFormProps> = ({
         />
         <ProFormText.Password
           name="password"
-          label="密码"
-          placeholder="请输入密码"
+          label={intl.formatMessage({
+            id: 'pages.admins.createForm.password.label',
+          })}
+          placeholder={intl.formatMessage({
+            id: 'pages.admins.createForm.password.placeholder',
+          })}
           rules={[
             {
               required: true,
-              message: '请输入密码',
+              message: intl.formatMessage({
+                id: 'pages.admins.createForm.password.required',
+              }),
             },
           ]}
           fieldProps={{

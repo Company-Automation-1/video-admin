@@ -1,6 +1,6 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
-import { history } from '@umijs/max';
+import { getIntl, history } from '@umijs/max';
 import { message } from 'antd';
 import { tokenManager } from '@/utils/token';
 
@@ -30,7 +30,11 @@ export const errorConfig: RequestConfig = {
         message: errorMessage,
       } = res as unknown as ResponseStructure;
       if (!success) {
-        const error: any = new Error(errorMessage || '请求失败');
+        const intl = getIntl();
+        const error: any = new Error(
+          errorMessage ||
+            intl.formatMessage({ id: 'pages.error.requestFailed' }),
+        );
         error.name = 'BizError';
         error.info = { code, message: errorMessage, data };
         throw error; // 抛出自制的错误
@@ -39,18 +43,21 @@ export const errorConfig: RequestConfig = {
     // 错误接收及处理
     errorHandler: (error: any, opts: any) => {
       if (opts?.skipErrorHandler) throw error;
+      const intl = getIntl();
       // 我们的 errorThrower 抛出的错误。
       if (error.name === 'BizError') {
         const errorInfo = error.info;
         // 如果是 401 未授权，清除 token 并跳转登录页
         if (errorInfo?.code === 401) {
           tokenManager.remove();
-          message.error('未授权，请重新登录');
+          message.error(intl.formatMessage({ id: 'pages.error.unauthorized' }));
           history.push('/user/login');
         } else if (errorInfo?.message) {
           message.error(errorInfo.message);
         } else {
-          message.error('请求失败，请重试');
+          message.error(
+            intl.formatMessage({ id: 'pages.error.requestFailed' }),
+          );
         }
       } else if (error.response) {
         // Axios 的错误
@@ -59,24 +66,28 @@ export const errorConfig: RequestConfig = {
         if (status === 401) {
           // 清除 token
           tokenManager.remove();
-          message.error('未授权，请重新登录');
+          message.error(intl.formatMessage({ id: 'pages.error.unauthorized' }));
           // 跳转到登录页
           history.push('/user/login');
         } else if (status === 403) {
-          message.error('没有权限访问');
+          message.error(intl.formatMessage({ id: 'pages.error.noPermission' }));
         } else if (status >= 500) {
-          message.error('服务器错误，请稍后重试');
+          message.error(intl.formatMessage({ id: 'pages.error.serverError' }));
         } else {
-          message.error(`请求失败: ${status}`);
+          message.error(
+            `${intl.formatMessage({
+              id: 'pages.error.requestFailedWithStatus',
+            })}: ${status}`,
+          );
         }
       } else if (error.request) {
         // 请求已经成功发起，但没有收到响应
         // \`error.request\` 在浏览器中是 XMLHttpRequest 的实例，
         // 而在node.js中是 http.ClientRequest 的实例
-        message.error('网络错误，请检查网络连接');
+        message.error(intl.formatMessage({ id: 'pages.error.networkError' }));
       } else {
         // 发送请求时出了点问题
-        message.error('请求错误，请重试');
+        message.error(intl.formatMessage({ id: 'pages.error.requestError' }));
       }
     },
   },

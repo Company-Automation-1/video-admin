@@ -4,17 +4,20 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { useRequest } from '@umijs/max';
+import { useIntl, useRequest } from '@umijs/max';
 import { Button, message, Upload } from 'antd';
 import React from 'react';
 import useStyles from './index.style';
 
 const BaseView: React.FC = () => {
   const { styles } = useStyles();
+  const intl = useIntl();
   // 头像组件 方便以后独立，增加裁剪之类的功能
   const AvatarView = ({ avatar }: { avatar: string }) => (
     <>
-      <div className={styles.avatar_title}>头像</div>
+      <div className={styles.avatar_title}>
+        {intl.formatMessage({ id: 'pages.account.base.avatar' })}
+      </div>
       <div className={styles.avatar}>
         <img src={avatar} alt="avatar" />
       </div>
@@ -22,14 +25,16 @@ const BaseView: React.FC = () => {
         <div className={styles.button_view}>
           <Button>
             <UploadOutlined />
-            更换头像
+            {intl.formatMessage({ id: 'pages.account.base.changeAvatar' })}
           </Button>
         </div>
       </Upload>
     </>
   );
   const { data: currentUser, loading } = useRequest(() => {
-    message.info('当前用户信息暂未实现');
+    message.info(
+      intl.formatMessage({ id: 'pages.account.base.userInfoNotImplemented' }),
+    );
     console.log('currentUser', currentUser);
   });
   const beforeUpload = (file: File) => {
@@ -45,7 +50,9 @@ const BaseView: React.FC = () => {
     );
     console.log('handleFinish', values);
 
-    message.info('提交功能暂未实现');
+    message.info(
+      intl.formatMessage({ id: 'pages.account.base.submitNotImplemented' }),
+    );
   };
   return (
     <div className={styles.baseView}>
@@ -57,7 +64,9 @@ const BaseView: React.FC = () => {
               onFinish={handleFinish}
               submitter={{
                 searchConfig: {
-                  submitText: '更新基本信息',
+                  submitText: intl.formatMessage({
+                    id: 'pages.account.base.submit',
+                  }),
                 },
                 render: (_, dom) => dom[1],
               }}
@@ -66,29 +75,41 @@ const BaseView: React.FC = () => {
               <ProFormText
                 width="md"
                 name="email"
-                label="邮箱"
+                label={intl.formatMessage({
+                  id: 'pages.account.base.email.label',
+                })}
                 rules={[
                   {
                     required: true,
-                    message: '请输入您的邮箱!',
+                    message: intl.formatMessage({
+                      id: 'pages.account.base.email.required',
+                    }),
                   },
                 ]}
               />
               <ProFormText
                 width="md"
                 name="name"
-                label="昵称"
+                label={intl.formatMessage({
+                  id: 'pages.account.base.nickname.label',
+                })}
                 rules={[
                   {
                     required: true,
-                    message: '请输入您的昵称!',
+                    message: intl.formatMessage({
+                      id: 'pages.account.base.nickname.required',
+                    }),
                   },
                 ]}
               />
               <ProFormTextArea
                 name="profile"
-                label="个人简介"
-                placeholder="个人简介"
+                label={intl.formatMessage({
+                  id: 'pages.account.base.profile.label',
+                })}
+                placeholder={intl.formatMessage({
+                  id: 'pages.account.base.profile.placeholder',
+                })}
               />
             </ProForm>
           </div>
